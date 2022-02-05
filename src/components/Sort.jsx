@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 //useEffect хук обработчик клика на весь документ
 //useRef нужен что бы хранить силки данние "привильно" в контексте реакта
-function Sort({ items }) {
+
+const Sort = memo(function Sort({ items }) {
   const [visiblePopup, setVisiblePopup] = useState(false);
   const [activeItem, setActiveItem] = useState(0); //setActiveItem обновляет activeItem
   const softRef = useRef();
@@ -22,7 +23,6 @@ function Sort({ items }) {
   };
   useEffect((e) => {
     document.body.addEventListener('click', handleOutSideClick);
-    console.log(softRef);
   }, []);
 
   const liList = items.map((obj, index) => {
@@ -61,5 +61,6 @@ function Sort({ items }) {
       )}
     </div>
   );
-}
+});
+
 export default Sort;

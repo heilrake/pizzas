@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 
-function Categories({ items, onClick }) {
+const Categories = React.memo(function Categories({ items, onClickItem }) {
   const [activeItem, setActiveItem] = useState(null); //setActiveItem обновляет activeItem
 
   const onSelectItem = (index) => {
+    onClickItem(index);
     setActiveItem(index);
   };
- 
+
   const liList = items.map((name, index) => {
     return (
       <li
@@ -27,6 +28,6 @@ function Categories({ items, onClick }) {
       </ul>
     </div>
   );
-}
+});
 
 export default Categories;

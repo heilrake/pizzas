@@ -22,7 +22,7 @@ function PizzaBlock({ name, price, sizes, imageUrl, types }) {
     );
   });
   const LiChoise = types.map((name, index) => {
-    if (!name == '0') {
+    if (name === 0) {
       name = 'традиционное';
     } else {
       name = 'тонкое';
