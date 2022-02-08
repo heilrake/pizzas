@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function PizzaBlock({ name, price, sizes, imageUrl, types }) {
+
+function PizzaBlock({ name, price, sizes, imageUrl, types, isLoading }) {
   const [activeItemSize, setActiveItemSize] = useState(0); //setActiveItem обновляет activeItem
   const [activeItemType, setActiveItemType] = useState(0); // вибираем тесто для пици
+ 
   const onSelectItemSize = (index) => {
     setActiveItemSize(index);
   };
@@ -44,6 +46,7 @@ function PizzaBlock({ name, price, sizes, imageUrl, types }) {
         <ul>{LiChoise}</ul>
         <ul>{liList}</ul>
       </div>
+
       <div className="pizza-block__bottom">
         <div className="pizza-block__price">от {price} ₽</div>
         <div className="button button--outline button--add">
@@ -70,6 +73,10 @@ PizzaBlock.propTypes = {
   name: PropTypes.string,
   imageUrl: PropTypes.string,
   price: PropTypes.number,
+  isLoaded: PropTypes.bool,
+};
+PizzaBlock.defaultProps = {
+  isLoaded: false,
 };
 
 export default PizzaBlock;
