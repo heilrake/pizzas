@@ -3,42 +3,50 @@ import { Categories, Sort, PizzaBlock } from '../components';
 import { useSelector, useDispatch } from 'react-redux';
 import React, { useCallback } from 'react';
 import { fetchPizzas } from '../redux/actions/pizzas';
-import { setCategory } from '../redux/actions/filters';
+import { setCategory, setSortBy } from '../redux/actions/filters';
 import LoadPizza from '../components/PizzaBlock/LoadPizza';
-const categoryNames = ['Мясние', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
 
+const categoryNames = ['Мясние', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
+const sortItems = [
+  { name: 'популярности', type: 'popular', order: 'desc' },
+  { name: 'цене', type: 'price', order: 'desc' },
+  { name: 'алфавиту', type: 'name', order: 'asc' },
+];
 function Home() {
   const dispatch = useDispatch();
   const items = useSelector(({ pizzas }) => pizzas.items);
+  //const cartItems = useSelector(({ cart }) => cart.items);
   const isLoaded = useSelector(({ pizzas }) => pizzas.isLoaded);
   const { category, sortBy } = useSelector(({ filters }) => filters);
-  //console.log(isLoaded);
-  console.log(category, sortBy);
 
   React.useEffect(() => {
-    /*fetch('http://localhost:3000/db.json') наглядный пример axios i fetch
-      .then((resp) => resp.json())
-      .then((json) => {
-        setPizzas(json.pizzas);
-      });*/
-    dispatch(fetchPizzas());
-  }, [category]); // визиваетса при первом ререндере
+    dispatch(fetchPizzas(sortBy, category));
+  }, [category, sortBy]);
 
-  const onSelectCategory = useCallback((index) => {
+  const onSelectCategory = React.useCallback((index) => {
     dispatch(setCategory(index));
   }, []);
+
+  const onSelectSortType = React.useCallback((type) => {
+    dispatch(setSortBy(type));
+  }, []);
+
+  const handleAddPizzaToCart = (obj) => {
+    dispatch({
+      type: 'ADD_PIZZA_CART',
+      payload: obj,
+    });
+  };
 
   return (
     <div className="container">
       <div className="content__top">
-        <Categories onClickItem={onSelectCategory} items={categoryNames} />
-        <Sort
-          items={[
-            { name: 'популярность', type: 'popular' },
-            { name: 'цене', type: 'price' },
-            { name: 'алфавиту', type: 'alphabet' },
-          ]}
+        <Categories
+          activeCategory={category}
+          onClickCategory={onSelectCategory}
+          items={categoryNames}
         />
+        <Sort activeSortType={sortBy.type} items={sortItems} onClickSortType={onSelectSortType} />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">

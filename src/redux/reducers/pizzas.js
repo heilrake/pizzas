@@ -8,16 +8,16 @@ const pizzas = (state = initialState, action) => {
     case 'SET_PIZZAS':
       return {
         ...state,
-        isLoaded: true,
         items: action.payload,
+        isLoaded: true,
       };
-      break;
+
     case 'SET_LOADED':
       return {
         ...state,
         isLoaded: action.payload,
       };
-      break;
+
     default:
       return state;
   }

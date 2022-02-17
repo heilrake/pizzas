@@ -1,46 +1,38 @@
-import { useState, useEffect, useRef, memo } from 'react';
-//useEffect хук обработчик клика на весь документ
-//useRef нужен что бы хранить силки данние "привильно" в контексте реакта
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Sort = memo(function Sort({ items }) {
-  const [visiblePopup, setVisiblePopup] = useState(false);
-  const [activeItem, setActiveItem] = useState(0); //setActiveItem обновляет activeItem
-  const softRef = useRef();
-  const activeLabel = items[activeItem].name;
+const SortPopup = React.memo(function SortPopup({ items, activeSortType, onClickSortType }) {
+  const [visiblePopup, setVisiblePopup] = React.useState(false);
+  const sortRef = React.useRef();
+  const activeLabel = items.find((item) => item.type === activeSortType).name;
+  // console.log(items[1].find((obj) => obj.type === activeSortType).name);
+  const toggleVisiblePopup = () => {
+    setVisiblePopup(!visiblePopup);
+  };
+
+  const handleOutsideClick = (event) => {
+    const path = event.path || (event.composedPath && event.composedPath());
+    if (!path.includes(sortRef.current)) {
+      setVisiblePopup(false);
+    }
+  };
 
   const onSelectItem = (index) => {
-    setActiveItem(index);
+    if (onClickSortType) {
+      onClickSortType(index);
+    }
     setVisiblePopup(false);
   };
 
-  const toggleToVisiblePopup = () => {
-    setVisiblePopup(!visiblePopup);
-  };
-  const handleOutSideClick = (e) => {
-    if (!e.path.includes(softRef.current)) {
-      setVisiblePopup(false); // здесь ми закриваем попап если кликнули а любое место но только не в него
-    }
-  };
-  useEffect((e) => {
-    document.body.addEventListener('click', handleOutSideClick);
+  React.useEffect(() => {
+    document.body.addEventListener('click', handleOutsideClick);
   }, []);
 
-  const liList = items.map((obj, index) => {
-    return (
-      <li
-        className={activeItem === index ? 'active' : ' '}
-        onClick={() => onSelectItem(index)}
-        key={`${obj.type}_${index}`}>
-        {obj.name}
-      </li> //категории пиц
-    );
-  });
-
   return (
-    <div ref={softRef} className="sort">
+    <div ref={sortRef} className="sort">
       <div className="sort__label">
         <svg
-          className={visiblePopup ? 'rotated' : ' '}
+          className={visiblePopup ? 'rotated' : ''}
           width="10"
           height="6"
           viewBox="0 0 10 6"
@@ -52,15 +44,35 @@ const Sort = memo(function Sort({ items }) {
           />
         </svg>
         <b>Сортировка по:</b>
-        <span onClick={toggleToVisiblePopup}>{activeLabel}</span>
+        <span onClick={toggleVisiblePopup}>{activeLabel}</span>
       </div>
       {visiblePopup && (
         <div className="sort__popup">
-          <ul>{liList}</ul>
+          <ul>
+            {items &&
+              items.map((obj, index) => (
+                <li
+                  onClick={() => onSelectItem(obj)}
+                  className={activeSortType === obj.type ? 'active' : ''}
+                  key={`${obj.type}_${index}`}>
+                  {obj.name}
+                </li>
+              ))}
+          </ul>
         </div>
       )}
     </div>
   );
 });
 
-export default Sort;
+SortPopup.propTypes = {
+  activeSortType: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onClickSortType: PropTypes.func.isRequired,
+};
+
+SortPopup.defaultProps = {
+  items: [],
+};
+
+export default SortPopup;

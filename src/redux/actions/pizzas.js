@@ -6,12 +6,22 @@ export const setLoaded = (payload) => ({
 });
 
 // для получения и сохранения пицц после запроса
-export const fetchPizzas = () => (dispatch) => {
+export const fetchPizzas = (sortBy, category) => (dispatch) => {
   //АСИНХРОННО
   // запрос к серверу
-  axios.get('http://localhost:3001/pizzas').then(({ data }) => {
-    dispatch(setPizzas(data));
+  dispatch({
+    type: 'SET_LOADED',
+    payload: false,
   });
+  axios
+    .get(
+      `http://localhost:3001/pizzas?${category !== null ? `category=${category}` : ''}&_sort=${
+        sortBy.type
+      }&_order=${sortBy.order}`,
+    )
+    .then(({ data }) => {
+      dispatch(setPizzas(data));
+    });
 };
 
 // метод для сохранение пицц
